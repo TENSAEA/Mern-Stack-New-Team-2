@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["renter", "landlord", "broker", "admin", "superadmin"],
+      enum: ["tenant", "landlord", "broker", "admin", "superadmin"],
       required: true,
     },
     photo: { type: String, default: "defaultuser.png" },

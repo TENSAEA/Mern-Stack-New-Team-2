@@ -25,7 +25,7 @@ const userValidator = Joi.object({
     "string.empty": "Password cannot be empty",
   }),
   role: Joi.string()
-    .valid("renter", "landlord", "broker", "admin", "superadmin")
+    .valid("tenant", "landlord", "broker", "admin", "superadmin")
     .required()
     .messages({
       "any.required": "Role is required",
