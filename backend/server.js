@@ -18,7 +18,7 @@ const adminRoutes = require("./routes/adminRoute");
 const propertyRoutes = require("./routes/propertyRoute");
 // const reportRoutes = require("./routes/reportRoute.js");
 // const indexRoutes = require("./routes/indexRoute");
-// const pendingOrderRoutes = require("./routes/pendingOrderRoute.js");
+const pendingOrderRoutes = require("./routes/pendingOrderRoute.js");
 
 // Use middleware
 app.use(cors());
@@ -27,7 +27,7 @@ app.use(cors());
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/propertie", propertyRoutes);
-// app.use("/pending", pendingOrderRoutes);
+app.use("/pending", pendingOrderRoutes);
 // app.use("/reports", reportRoutes);
 // app.use("/payments", paymentRoutes);
 // app.use("/", indexRoutes);
