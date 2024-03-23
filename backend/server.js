@@ -15,9 +15,8 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 // Import routes
 const userRoutes = require("./routes/userRoute");
 const adminRoutes = require("./routes/adminRoute");
-// const propertyRoutes = require("./routes/propertyRoute");
+const propertyRoutes = require("./routes/propertyRoute");
 // const reportRoutes = require("./routes/reportRoute.js");
-// const paymentRoutes = require("./routes/paymentRoute");
 // const indexRoutes = require("./routes/indexRoute");
 // const pendingOrderRoutes = require("./routes/pendingOrderRoute.js");
 
@@ -25,9 +24,9 @@ const adminRoutes = require("./routes/adminRoute");
 app.use(cors());
 
 // Use routes
-app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
-// app.use("/properties", propertyRoutes);
+app.use("/api/v1/propertie", propertyRoutes);
 // app.use("/pending", pendingOrderRoutes);
 // app.use("/reports", reportRoutes);
 // app.use("/payments", paymentRoutes);

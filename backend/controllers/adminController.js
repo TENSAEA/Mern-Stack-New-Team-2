@@ -29,6 +29,10 @@ exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
     const user = await User.findById(id);
+    if (user.role === "superadmin")
+      return res.status(403).json({
+        error: "superadmin can't be deleted.",
+      });
     if (user.role === "admin") {
       if (req.user.role !== "superadmin") {
         return res.status(403).json({
