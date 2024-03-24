@@ -1,7 +1,6 @@
 // Load environment variables
 require("dotenv").config();
 const bodyParser = require("body-parser");
-const nodemailer = require("nodemailer");
 // Load dependencies
 const express = require("express");
 const cors = require("cors");
@@ -16,8 +15,8 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 const userRoutes = require("./routes/userRoute");
 const adminRoutes = require("./routes/adminRoute");
 const propertyRoutes = require("./routes/propertyRoute");
-// const reportRoutes = require("./routes/reportRoute.js");
-// const indexRoutes = require("./routes/indexRoute");
+const feedbackRoutes = require("./routes/feedbackRoute.js");
+const reportRoutes = require("./routes/reportRoute.js");
 const pendingOrderRoutes = require("./routes/pendingOrderRoute.js");
 
 // Use middleware
@@ -27,10 +26,9 @@ app.use(cors());
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/propertie", propertyRoutes);
-app.use("/pending", pendingOrderRoutes);
-// app.use("/reports", reportRoutes);
-// app.use("/payments", paymentRoutes);
-// app.use("/", indexRoutes);
+app.use("/api/v1/feedback", feedbackRoutes);
+app.use("/api/v1/pending", pendingOrderRoutes);
+app.use("/api/v1//reports", reportRoutes);
 
 const connectDb = require("./config/db");
 connectDb();
