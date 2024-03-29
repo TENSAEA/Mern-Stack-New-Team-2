@@ -22,16 +22,28 @@ exports.uploadPropertyImages = upload.fields([
 ]);
 
 exports.resizePropertyImages = async (req, res, next) => {
-  try {
-    if (!req.files.imageCover || !req.files.images) return next();
+  if (!req.files) {
+    return res.status(400).json({ message: "No images uploaded!" });
+  }
 
+  if (!req.files.imageCover || req.files.imageCover.length === 0) {
+    return res.status(400).json({ message: "Cover image is required!" });
+  }
+
+  if (!req.files.images || req.files.images.length === 0) {
+    return res
+      .status(400)
+      .json({ message: "At least one property image is required!" });
+  }
+
+  try {
     // 1) Cover image
     req.body.imageCover = `property-${req.user._id}-${Date.now()}-cover.jpeg`;
     await sharp(req.files.imageCover[0].buffer)
       .resize(2000, 1333)
       .toFormat("jpeg")
       .jpeg({ quality: 90 })
-      .toFile(`public/img/propertys/${req.body.imageCover}`);
+      .toFile(`public/img/properties/${req.body.imageCover}`); // Changed directory to 'properties'
 
     // 2) Images
     req.body.images = [];
@@ -44,7 +56,7 @@ exports.resizePropertyImages = async (req, res, next) => {
           .resize(2000, 1333)
           .toFormat("jpeg")
           .jpeg({ quality: 90 })
-          .toFile(`public/img/propertys/${filename}`);
+          .toFile(`public/img/properties/${filename}`); // Changed directory to 'properties'
 
         req.body.images.push(filename);
       })
@@ -52,7 +64,7 @@ exports.resizePropertyImages = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.log(error);
-    res.status(501).json({ message: "error while uploading images" });
+    console.error(error);
+    res.status(500).json({ message: "Error while processing images" });
   }
 };

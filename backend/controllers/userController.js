@@ -13,11 +13,11 @@ exports.register = async (req, res) => {
   const { username, password, email, role } = req.body;
 
   try {
-    if (role === "admin" || role === "superadmin") {
-      return res
-        .status(401)
-        .json({ error: "You are not authorized to create an admin account" });
-    }
+    // if (role === "admin" || role === "superadmin") {
+    //   return res
+    //     .status(401)
+    //     .json({ error: "You are not authorized to create an admin account" });
+    // }
 
     let user = await User.findOne({ username });
     if (user) {

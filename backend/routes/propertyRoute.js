@@ -26,8 +26,8 @@ router.get("/get-all-property", adminOrSuperadminAuth, getAllProperty);
 router.post(
   "/create-property",
   landlordOrBrokerAuth,
-  handleImage.uploadPropertyImages,
-  handleImage.resizePropertyImages,
+  // handleImage.uploadPropertyImages,
+  // handleImage.resizePropertyImages,
   validateHouse,
   createProperty
 );

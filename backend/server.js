@@ -16,8 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 const userRoutes = require("./routes/userRoute");
 const adminRoutes = require("./routes/adminRoute");
 const propertyRoutes = require("./routes/propertyRoute");
-// const reportRoutes = require("./routes/reportRoute.js");
-// const indexRoutes = require("./routes/indexRoute");
+const reportRoutes = require("./routes/reportRoute.js");
 const pendingOrderRoutes = require("./routes/pendingOrderRoute.js");
 
 // Use middleware
@@ -26,11 +25,9 @@ app.use(cors());
 // Use routes
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
-app.use("/api/v1/propertie", propertyRoutes);
+app.use("/api/v1/properties", propertyRoutes);
 app.use("/pending", pendingOrderRoutes);
-// app.use("/reports", reportRoutes);
-// app.use("/payments", paymentRoutes);
-// app.use("/", indexRoutes);
+app.use("/reports", reportRoutes);
 
 const connectDb = require("./config/db");
 connectDb();

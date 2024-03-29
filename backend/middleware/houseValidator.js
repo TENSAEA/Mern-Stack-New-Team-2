@@ -51,10 +51,10 @@ const houseValidator = Joi.object({
   description: Joi.string().required().messages({
     "any.required": "Description is required",
   }),
-  imageCover: Joi.string().required().messages({
-    "any.required": "Cover image is required",
-    "string.empty": "Cover image cannot be empty",
-  }),
+  // imageCover: Joi.string().required().messages({
+  //   "any.required": "Cover image is required",
+  //   "string.empty": "Cover image cannot be empty",
+  // }),
   images: Joi.array().items(Joi.string()).optional(),
   status: Joi.string()
     .valid("available", "rented", "unavailable")
