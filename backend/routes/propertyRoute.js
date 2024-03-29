@@ -33,13 +33,7 @@ router.post(
 );
 
 // Endpoint for updating an existing property listing
-router.put(
-  "/update/:id",
-  landlordOrBrokerAuth,
-  handleImage.uploadPropertyImages,
-  handleImage.resizePropertyImages,
-  updateProperty
-);
+router.put("/update/:id", landlordOrBrokerAuth, updateProperty);
 
 // Endpoint for deleting an existing property listing
 router.delete("/delete/:id", adminOrSuperadminAuth, deleteProperty);
@@ -47,7 +41,6 @@ router.delete("/delete/:id", adminOrSuperadminAuth, deleteProperty);
 // Endpoint for landlords/brokers to mark a house as available
 router.put(
   "/:id/aprove-status",
-  validateHouse,
   adminOrSuperadminAuth,
   approvalStatusOfProperty
 );

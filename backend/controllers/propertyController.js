@@ -144,7 +144,7 @@ const deleteProperty = async (req, res) => {
 
     const deletedHouseData = {
       ...houseToBeDeleted._doc,
-      deletionReason: req.body.deletionReason || "House deleted by user",
+      deletionReason: req.body.deletionReason || "Platform closure",
     };
 
     console.log(deletedHouseData);
@@ -159,7 +159,8 @@ const deleteProperty = async (req, res) => {
 };
 
 const approvalStatusOfProperty = async (req, res) => {
-  const { approvalStatus } = req.body;
+  const approvalStatus = req.body;
+  console.log(approvalStatus);
   try {
     const houseToBeUpdated = await House.findById(req.params.id);
 
