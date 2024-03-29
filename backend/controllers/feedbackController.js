@@ -33,7 +33,7 @@ exports.createFeedback = async (req, res) => {
     console.error(error);
     res
       .status(500)
-      .json({ status: "error", message: "Error while sending feedback" });
+      .json({ status: "error", message: "Erro while sending feedback" });
   }
 };
 
