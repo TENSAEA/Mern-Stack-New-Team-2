@@ -14,16 +14,18 @@ const deletionReasons = {
   SUPERADMIN_MAINTENANCE: "System maintenance",
   SUPERADMIN_LEGAL_ISSUES: "Legal issues",
   SUPERADMIN_PLATFORM_CLOSURE: "Platform closure",
+  USER_DELETED: "House deleted by user",
 };
 
 const deletedHouseSchema = new mongoose.Schema({
   ...House.schema.paths,
   deletionReason: {
     type: String,
-    enum: deletionReasons,
+    enum: Object.values(deletionReasons),
     required: true,
   },
   deletedAt: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("DeletedHouse", deletedHouseSchema);
+module.exports.deletionReasons = deletionReasons;

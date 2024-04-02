@@ -1,18 +1,9 @@
 const Joi = require("joi");
 
 const houseValidator = Joi.object({
-  city: Joi.string().required().messages({
-    "any.required": "City is required",
-  }),
-  subCity: Joi.string().required().messages({
-    "any.required": "Sub-city is required",
-  }),
-  wereda: Joi.string().required().messages({
-    "any.required": "Wereda is required",
-  }),
-  specialLocation: Joi.string().required().messages({
-    "any.required": "Special location is required",
-  }),
+  subCity: Joi.string().optional(),
+  wereda: Joi.string().optional(),
+  specialLocation: Joi.string().optional(),
   type: Joi.string()
     .valid(
       "one-room",
@@ -24,11 +15,7 @@ const houseValidator = Joi.object({
       "G+2",
       "G+3"
     )
-    .required()
-    .messages({
-      "any.required": "House type is required",
-      "any.only": "Invalid house type",
-    }),
+    .optional(),
   category: Joi.string()
     .valid(
       "Villa",
@@ -38,33 +25,21 @@ const houseValidator = Joi.object({
       "Penthouse",
       "others"
     )
-    .required()
-    .messages({
-      "any.required": "Category is required",
-      "any.only": "Invalid category",
-    }),
-  price: Joi.number().required().messages({
-    "any.required": "Price is required",
-    "number.base": "Price must be a number",
-  }),
-  comision: Joi.number().default(0),
-  description: Joi.string().required().messages({
-    "any.required": "Description is required",
-  }),
-  imageCover: Joi.string().required().messages({
-    "any.required": "Cover image is required",
-    "string.empty": "Cover image cannot be empty",
-  }),
+    .optional(),
+  price: Joi.number().optional(),
+  comision: Joi.number().optional(),
+  description: Joi.string().optional(),
+  imageCover: Joi.string().optional(),
   images: Joi.array().items(Joi.string()).optional(),
-  status: Joi.string()
-    .valid("available", "rented", "unavailable")
-    .default("available"),
+  status: Joi.string().valid("available", "rented", "unavailable").optional(),
   approvalStatus: Joi.string()
     .valid("pending", "approved", "declined")
-    .default("pending"),
-  landlord: Joi.string().required().optional(),
+    .optional(),
+  landlord: Joi.string().optional(),
   broker: Joi.string().optional(),
-}).options({ abortEarly: false });
+})
+  .min(1)
+  .options({ abortEarly: false });
 
 const validateHouse = (req, res, next) => {
   const { error } = houseValidator.validate(req.body);
@@ -73,4 +48,7 @@ const validateHouse = (req, res, next) => {
   }
   next();
 };
-module.exports = validateHouse;
+
+module.exports = {
+  validateHouse,
+};

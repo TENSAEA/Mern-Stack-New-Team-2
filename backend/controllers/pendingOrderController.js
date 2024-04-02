@@ -84,10 +84,11 @@ exports.deletePendingOrder = async (req, res) => {
         .json({ message: "Not authorized to delete this order" });
     }
 
-    await pendingOrder.remove();
+    await PendingOrder.deleteOne({ _id: id });
     res.status(200).json({ message: "Pending order deleted" });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error(error); // Log the error to the console
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -138,6 +139,9 @@ exports.acceptPendingOrder = async (req, res) => {
 
     // Update the house status to rented
     const house = await House.findById(order.house);
+    if (!house) {
+      return res.status(404).json({ message: "House not found" });
+    }
     house.status = "rented";
     await house.save();
 
@@ -149,10 +153,14 @@ exports.acceptPendingOrder = async (req, res) => {
 
     res.status(200).json(order);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error(error); // Log the full error stack to the console
+    res.status(500).json({
+      message: "Server error",
+      error: error.message,
+      stack: error.stack, // Include the error stack in the response for debugging
+    });
   }
 };
-
 exports.rejectPendingOrder = async (req, res) => {
   const { id } = req.params;
   try {

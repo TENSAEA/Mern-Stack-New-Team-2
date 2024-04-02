@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const handleImage = require("../middleware/multipleFileHandler");
-const validateHouse = require("../middleware/houseValidator");
+const { validateHouse } = require("../middleware/houseValidator");
 const {
   tenantOnlyAuth,
   adminOrSuperadminAuth,
@@ -40,7 +40,11 @@ router.delete("/delete/:id", adminOrSuperadminAuth, deleteProperty);
 
 // Endpoint for landlords/brokers to mark a house as available
 router.put(
-  "/:id/aprove-status",
+
+  "/:id/approve-status",
+  validateHouse,
+
+
   adminOrSuperadminAuth,
   approvalStatusOfProperty
 );
