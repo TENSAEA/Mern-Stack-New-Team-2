@@ -16,7 +16,7 @@ router.post(
 );
 
 router.delete(
-  "/delet-user/:id",
+  "/delete-user/:id",
   adminOrSuperadminAuth,
   adminController.deleteUser
 );

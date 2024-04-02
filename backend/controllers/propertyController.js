@@ -1,7 +1,7 @@
 const { json } = require("express");
 const House = require("../model/houseModel");
 const DeletedHouse = require("../model/deletedHouseModel");
-
+const { deletionReasons } = require("../model/deletedHouseModel");
 const getAllAvailableProperty = async (req, res) => {
   try {
     let availableHouses = await House.find({
@@ -77,6 +77,13 @@ const createProperty = async (req, res) => {
       houseData.landlord = req.user._id;
     }
 
+    // // Check if the imageCover is set in the body after multer processing
+    // if (!req.body.imageCover) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "A House must have a cover image" });
+    // }
+
     const house = await House.create(houseData);
 
     res.status(201).json({
@@ -136,6 +143,11 @@ const deleteProperty = async (req, res) => {
       return res.status(404).json({ error: "House not found" });
     }
 
+    // Ensure imageCover is included in the deletedHouseData
+    if (!houseToBeDeleted.imageCover) {
+      return res.status(400).json({ error: "House must have a cover image" });
+    }
+
     const deleteResult = await House.deleteOne({ _id: req.params.id });
 
     if (deleteResult.deletedCount === 0) {
@@ -144,10 +156,9 @@ const deleteProperty = async (req, res) => {
 
     const deletedHouseData = {
       ...houseToBeDeleted._doc,
-      deletionReason: req.body.deletionReason || "House deleted by user",
+      deletionReason: req.body.deletionReason || deletionReasons.USER_DELETED, // Use the enum value
     };
 
-    console.log(deletedHouseData);
     const newDeletedHouse = new DeletedHouse(deletedHouseData);
     await newDeletedHouse.save();
 
@@ -168,7 +179,7 @@ const approvalStatusOfProperty = async (req, res) => {
     }
     const updatedHouse = await House.findByIdAndUpdate(
       req.params.id,
-      approvalStatus,
+      { approvalStatus: approvalStatus },
       { new: true }
     );
 

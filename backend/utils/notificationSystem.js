@@ -1,23 +1,13 @@
-const nodemailer = require("nodemailer");
+const transporter = require("../config/mailer");
 const User = require("../model/userModel"); // Update the path as per your project structure
 
-// Create a reusable transporter object using the default SMTP transport
-const transporter = nodemailer.createTransport({
-  service: "gmail", // Replace with your email service provider
-  auth: {
-    user: process.env.EMAIL_USERNAME, // Your email
-    pass: process.env.EMAIL_PASSWORD, // Your email password
-  },
-});
-
-// Helper function to send an email
 async function sendEmail(to, subject, text, html) {
   const mailOptions = {
-    from: process.env.EMAIL_FROM, // Sender address
-    to: to, // List of receivers
-    subject: subject, // Subject line
-    text: text, // Plain text body
-    html: html, // HTML body content
+    from: process.env.EMAIL_FROM || '"Your App Name" <no-reply@example.com>', // Replace with your app name and email
+    to, // List of receivers
+    subject, // Subject line
+    text, // Plain text body
+    html, // HTML body content
   };
 
   try {
