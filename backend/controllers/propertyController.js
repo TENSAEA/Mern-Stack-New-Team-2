@@ -156,7 +156,10 @@ const deleteProperty = async (req, res) => {
 
     const deletedHouseData = {
       ...houseToBeDeleted._doc,
+
       deletionReason: req.body.deletionReason || deletionReasons.USER_DELETED, // Use the enum value
+      
+
     };
 
     const newDeletedHouse = new DeletedHouse(deletedHouseData);
@@ -170,7 +173,8 @@ const deleteProperty = async (req, res) => {
 };
 
 const approvalStatusOfProperty = async (req, res) => {
-  const { approvalStatus } = req.body;
+  const approvalStatus = req.body;
+  console.log(approvalStatus);
   try {
     const houseToBeUpdated = await House.findById(req.params.id);
 

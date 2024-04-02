@@ -1,13 +1,20 @@
-const { body, validationResult } = require("express-validator");
+const Joi = require("joi");
 
-exports.validateReport = [
-  body("type").not().isEmpty().withMessage("Report type is required"),
-  body("content").not().isEmpty().withMessage("Report content is required"),
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+exports.validateReport = (req, res, next) => {
+  const schema = Joi.object({
+    type: Joi.string().required().error(new Error("Report type is required")),
+    content: Joi.string()
+      .required()
+      .error(new Error("Report content is required")),
+  });
+
+  const { error } = schema.validate(req.body);
+
+  if (error) {
+    res
+      .status(400)
+      .json({ errors: error.details.map((detail) => detail.message) });
+  } else {
     next();
-  },
-];
+  }
+};
