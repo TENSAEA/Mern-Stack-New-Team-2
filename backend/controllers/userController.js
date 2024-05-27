@@ -3,12 +3,6 @@ const jwt = require("jsonwebtoken");
 const User = require("../model/userModel");
 const sendPasswordResetEmail = require("../utils/emailService");
 
-const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
-  });
-};
-
 exports.register = async (req, res) => {
   const { username, password, email, role } = req.body;
 
@@ -21,12 +15,12 @@ exports.register = async (req, res) => {
 
     let user = await User.findOne({ username });
     if (user) {
-      return res.status(400).json({ error: "Username already exists" });
+      return res.status(400).json({ error: "Username already in use" });
     }
 
     user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({ error: "Email already exists" });
+      return res.status(400).json({ error: "Email already in use" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -42,16 +36,11 @@ exports.register = async (req, res) => {
     await user.save();
 
     res.status(201).json({
-      _id: user._id,
-      name: user.username,
-      email: user.email,
-      role: user.role,
-      token: generateToken(user._id),
       message: "User created successfully",
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: "Server error" });
   }
 };
 
@@ -63,24 +52,83 @@ exports.login = async (req, res) => {
     if (user) {
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (passwordMatch) {
+        const accessToken = jwt.sign(
+          { id: user._id },
+          process.env.ACCESS_TOKEN_SECRET,
+          { expiresIn: "15m" }
+        );
+        const refreshToken = jwt.sign(
+          { id: user._id },
+          process.env.REFRESH_TOKEN_SECRET,
+          { expiresIn: "7d" }
+        );
+
+        res.cookie("jwt", refreshToken, {
+          httpOnly: true,
+          secure: true,
+          sameSite: "None",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
         res.status(200).json({
           _id: user._id,
           name: user.username,
           email: user.email,
+          isBlocked: user.isBlocked,
+          isDeactivated: user.isDeactivated,
+          photo: user.photo,
           role: user.role,
-          token: generateToken(user._id),
+          token: accessToken,
           message: "Login successful",
         });
       } else {
-        res.status(400).json({ error: "Invalid credentials" });
+        return res.status(400).json({ error: "Invalid credentials" });
       }
     } else {
-      res.status(400).json({ error: "User not found" });
+      return res.status(400).json({ error: "User not found" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ error: "Server error" });
   }
+};
+exports.refresh = async (req, res) => {
+  let refreshToken;
+  if (req.cookies) {
+    refreshToken = req.cookies.jwt;
+  } else {
+    return res.status(401).json({ error: "cookie dosn't exit" });
+  }
+  if (!refreshToken) return res.status(401).json({ error: "Unauthorized" });
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) return res.status(401).json({ error: "Unauthorized" });
+
+    const accessToken = jwt.sign(
+      { id: user._id },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    res.json({ accessToken });
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      return res.status(403).json({ error: "Token expired" });
+    } else {
+      return res.status(403).json({ error: "Invalid token" });
+    }
+  }
+};
+
+exports.logout = (req, res) => {
+  const cookies = req.cookies;
+  console.log(req.headers.origin);
+  if (!cookies?.jwt) return res.sendStatus(204);
+  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+  res.json({ message: "logging out was successful" });
 };
 
 exports.updateProfile = async (req, res) => {
@@ -175,16 +223,16 @@ exports.forgotPassword = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const resetToken = generateToken(user._id);
-    await sendPasswordResetEmail(
-      user.email,
-      resetToken,
-      req.protocol,
-      req.get("host")
+    const resetToken = jwt.sign(
+      { id: user._id },
+      process.env.RESATE_TOKEN_SECRET,
+      { expiresIn: "1d" }
     );
-    res.status(200).json({ message: "Password reset email sent" });
+    await sendPasswordResetEmail(user.email, resetToken, req.headers.origin);
+    res
+      .status(200)
+      .json({ message: "Password reset email sent,check your email" });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -193,25 +241,30 @@ exports.resetPassword = async (req, res) => {
   const { newPassword } = req.body;
   const { token } = req.params;
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.RESATE_TOKEN_SECRET);
 
     const user = await User.findById(decoded.id);
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res
+        .status(404)
+        .json({ error: "User not found, check your email again" });
     }
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);
 
-    await user.save();
+    const responce = await user.save();
+
+    if (!responce) {
+      return res.status(404).json({ error: "problem while resating password" });
+    }
 
     res.status(200).json({ message: "Password has been reset successfully" });
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
       return res.status(400).json({ error: "Invalid or expired token" });
     }
-    console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 };

@@ -7,6 +7,9 @@ const userController = require("../controllers/userController");
 
 router.post("/register", validateUser, userController.register);
 router.post("/login", validateLogin, userController.login);
+router.get("/refresh", userController.refresh);
+router.post("/logout", userController.logout);
+
 // // Add forgot password endpoints
 router.post("/forgot-password", userController.forgotPassword);
 router.post("/reset-password/:token", userController.resetPassword);

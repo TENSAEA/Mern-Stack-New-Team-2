@@ -5,7 +5,7 @@ const adminController = require("../controllers/adminController.js");
 const {
   adminOrSuperadminAuth,
   superAdminAuth,
-} = require("../middleware/authMiddleware");
+} = require("../middleware/verifyAndAuthorize.js");
 
 // // Super Admin exclusive user creation
 router.post(

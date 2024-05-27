@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const validateFeedback = require("../middleware/feedbackValidator");
-const { tenantOnlyAuth } = require("../middleware/authMiddleware");
+const { tenantOnlyAuth } = require("../middleware/verifyAndAuthorize");
 const feedbackController = require("../controllers/feedbackController");
 
 router.post(

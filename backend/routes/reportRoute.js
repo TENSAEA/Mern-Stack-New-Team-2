@@ -6,7 +6,7 @@ const { validateReport } = require("../middleware/reportValidator");
 const {
   tenantOnlyAuth,
   landlordOrBrokerAuth,
-} = require("../middleware/authMiddleware");
+} = require("../middleware/verifyAndAuthorize");
 
 router.post(
   "/submit-report",

@@ -17,7 +17,11 @@ const userSchema = new mongoose.Schema(
       enum: ["tenant", "landlord", "broker", "admin", "superadmin"],
       required: true,
     },
-    photo: { type: String, default: "defaultuser.png" },
+    photo: {
+      type: String,
+      default:
+        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+    },
     isBlocked: { type: Boolean, default: false },
     isDeactivated: { type: Boolean, default: false },
     image: { type: String, required: false },

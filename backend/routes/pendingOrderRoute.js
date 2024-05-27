@@ -4,7 +4,7 @@ const {
   tenantOnlyAuth,
   landlordOrBrokerAuth,
   landlordAuth,
-} = require("../middleware/authMiddleware");
+} = require("../middleware/verifyAndAuthorize");
 const pendingOrderController = require("../controllers/pendingOrderController");
 
 // Only Renters can submit pending orders

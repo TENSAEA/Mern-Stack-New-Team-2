@@ -6,7 +6,7 @@ const {
   tenantOnlyAuth,
   adminOrSuperadminAuth,
   landlordOrBrokerAuth,
-} = require("../middleware/authMiddleware");
+} = require("../middleware/verifyAndAuthorize");
 
 const {
   getAllAvailableProperty,
@@ -40,10 +40,8 @@ router.delete("/delete/:id", adminOrSuperadminAuth, deleteProperty);
 
 // Endpoint for landlords/brokers to mark a house as available
 router.put(
-
   "/:id/approve-status",
   validateHouse,
-
 
   adminOrSuperadminAuth,
   approvalStatusOfProperty

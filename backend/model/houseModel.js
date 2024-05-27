@@ -40,11 +40,8 @@ const houseSchema = new mongoose.Schema(
     },
     price: { type: Number, required: true },
     comision: { type: Number, required: true, default: 0 },
+    title: { type: String, required: true },
     description: { type: String, required: true },
-    imageCover: {
-      type: String,
-      required: [true, "A House must have a cover image"],
-    },
     images: [{ type: String }],
     status: {
       type: String,
